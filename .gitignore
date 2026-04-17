@@ -1,0 +1,7 @@
+.idea/
+*.iml
+.DS_Store
+.env.local
+backend/target/
+frontend/node_modules/
+frontend/dist/

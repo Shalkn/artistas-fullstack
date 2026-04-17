@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: artistas-api
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:artistas}
+    username: ${DB_USER:artistas}
+    password: ${DB_PASSWORD:artistas}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${APP_PORT:8080}
+  servlet:
+    context-path: /
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  cors:
+    # Sobrescrever via env: APP_CORS_ALLOWED_ORIGINS (lista separada por vírgula)
+    allowed-origins: http://localhost,http://127.0.0.1,http://localhost:80,http://127.0.0.1:80,http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me-min-256-bits-for-hs256-algorithm-required!!}
+    access-token-minutes: ${JWT_ACCESS_MINUTES:5}
+    refresh-token-days: ${JWT_REFRESH_DAYS:7}
+  storage:
+    bucket: ${S3_BUCKET:artistas-covers}
+    region: ${S3_REGION:us-east-1}
+    endpoint: ${S3_ENDPOINT:}
+    access-key: ${S3_ACCESS_KEY:minio}
+    secret-key: ${S3_SECRET_KEY:minio12345}
+    presign-get-minutes: ${S3_PRESIGN_MINUTES:30}
+  argus:
+    regionais-url: ${ARGUS_REGIONAIS_URL:https://integrador-argus-api.geia.vip/v1/regionais}
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    requests-per-minute: ${RATE_LIMIT_PER_MINUTE:10}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:artistas;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false

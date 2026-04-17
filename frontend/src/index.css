@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Design system (ui-ux-pro-max): catálogo musical — dark audio + play green */
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Righteous", ui-sans-serif, system-ui, sans-serif;
+
+  --color-surface: #0f0f23;
+  --color-surface-elevated: #15152c;
+  --color-surface-card: rgba(255, 255, 255, 0.04);
+  --color-primary: #4338ca;
+  --color-primary-muted: #312e81;
+  --color-accent: #22c55e;
+  --color-accent-hover: #16a34a;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    @apply bg-surface text-slate-100 antialiased;
+    background-image:
+      radial-gradient(ellipse 120% 80% at 50% -30%, rgba(67, 56, 202, 0.35), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(30, 27, 75, 0.5), transparent 45%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

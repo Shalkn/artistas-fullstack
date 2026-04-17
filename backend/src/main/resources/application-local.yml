@@ -1,0 +1,15 @@
+# Perfil para API rodando na máquina (mvn) com Postgres + MinIO via Docker Compose.
+# Uso: mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=local
+#
+# O endpoint aponta para o host (127.0.0.1), não para o hostname "minio" da rede Docker.
+spring:
+  config:
+    activate:
+      on-profile: local
+
+app:
+  # Desliga o rate limit em dev (10/min no padrão quebra HMR + várias chamadas por tela).
+  rate-limit:
+    enabled: false
+  storage:
+    endpoint: http://127.0.0.1:9000

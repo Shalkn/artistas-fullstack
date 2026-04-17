@@ -1,0 +1,83 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: artistas-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-artistas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-artistas}
+      POSTGRES_DB: ${POSTGRES_DB:-artistas}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-artistas}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - artistas-net
+
+  minio:
+    image: minio/minio:latest
+    container_name: artistas-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio12345}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - artistas-net
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: artistas-api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-artistas}
+      DB_USER: ${POSTGRES_USER:-artistas}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-artistas}
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-must-be-at-least-32-chars-long!!}
+      # Spring Boot: app.cors.allowed-origins
+      APP_CORS_ALLOWED_ORIGINS: "${APP_CORS_ALLOWED_ORIGINS:-http://localhost,http://127.0.0.1,http://localhost:80,http://127.0.0.1:80,http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080}"
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minio}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minio12345}
+      S3_BUCKET: ${S3_BUCKET:-artistas-covers}
+      S3_REGION: us-east-1
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - artistas-net
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: artistas-web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - artistas-net
+
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  artistas-net:
+    driver: bridge
