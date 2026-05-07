@@ -1,0 +1,13 @@
+# Copie para terraform.tfvars (não versionado) ou exporte TF_VAR_*.
+
+ssh_host               = "192.168.1.50"
+ssh_user               = "renan"
+ssh_port               = 22
+ssh_private_key_path   = "~/.ssh/id_ed25519"
+
+# Opcional: Terraform instala Tailscale (se faltar), opcionalmente autentica e roda Funnel em background.
+# tailscale_funnel_enabled = false
+# funnel_https_port        = 8443   # ou 443 / 10000
+# funnel_backend_port      = 80     # stack artistas (web) na VM
+# tailscale_auth_key       = "tskey-auth-xxxxx"  # gerar no admin Tailscale; não commitar
+# public_base_url          = "https://seu-no.ts.net"

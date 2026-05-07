@@ -1,0 +1,43 @@
+# Overlay para deploy em VM / lab: menos portas no host, restart e rotação de logs.
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d --build
+#
+# Expõe apenas o serviço web na porta 80 do host. Postgres, MinIO e API ficam só na rede interna
+# artistas-net (acesso externo à API via proxy /api e /ws no Nginx do frontend).
+
+services:
+  db:
+    ports: []
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  minio:
+    ports: []
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    ports: []
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

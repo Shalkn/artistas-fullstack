@@ -109,6 +109,16 @@ Definidas em `backend/src/main/java/com/artistas/api/bootstrap/AdminUserInitiali
 - **PostgreSQL:** usuário / senha / banco `artistas` (variáveis `POSTGRES_*` no compose).
 - **MinIO:** `minio` / `minio12345` (`MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`).
 
+### Deploy em VM / lab (menos portas expostas)
+
+Use o overlay [`docker-compose.prod.yml`](docker-compose.prod.yml) junto com `.env` (partir de [`.env.example`](.env.example)): só o serviço **web** publica **80** no host; Postgres, MinIO e API ficam na rede interna do Compose.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d --build
+```
+
+Detalhes no guia [doc/README.md](doc/README.md) (Fase 4).
+
 ---
 
 ## 5. Inicialização — apenas PostgreSQL e MinIO (Docker) + dev local
@@ -415,6 +425,16 @@ Inclui testes de exemplo (ex.: `JwtTokenServiceTest`, `ArtistControllerTest` com
 ```bash
 cd frontend && npm run build
 ```
+
+### CI/CD (GitHub Actions)
+
+No repositório:
+
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): Maven (`verify`), frontend (`lint` + `build`), build opcional das imagens Docker (sem push).
+- **Terraform** ([`.github/workflows/terraform-validate.yml`](.github/workflows/terraform-validate.yml)): `fmt`, `init`, `validate` em `infra/terraform`.
+- **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)): push das imagens para **GHCR** + SSH na VM (`git clone` na primeira vez se `DEPLOY_PATH` ainda não for um repo, depois `git pull`, `docker compose` prod, healthcheck do Actuator). Exige secrets `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `DEPLOY_PATH`; na VM, arquivo `.env` em `DEPLOY_PATH`.
+
+Passo a passo e branch protection: [doc/README.md](doc/README.md) (Fases 5 e 6).
 
 ---
 

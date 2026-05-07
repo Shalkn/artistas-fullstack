@@ -2,6 +2,18 @@
 *.iml
 .DS_Store
 .env.local
+.env
+!.env.example
 backend/target/
 frontend/node_modules/
 frontend/dist/
+
+# Terraform (infra/terraform)
+.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.*
+*.tfvars
+!**/terraform.tfvars.example
+crash.*.log
+crash.log
