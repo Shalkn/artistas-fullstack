@@ -114,5 +114,5 @@ jobs:
               exit 1
             fi
             sudo -n tailscale funnel reset || true
-            sudo -n tailscale funnel --https=443 http://127.0.0.1:80
+            sudo -n tailscale funnel --bg --https=443 http://127.0.0.1:80
             tailscale funnel status
