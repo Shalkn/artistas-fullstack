@@ -34,4 +34,7 @@ jobs:
         run: terraform init -backend=false -input=false
 
       - name: terraform validate
-        run: terraform validate -var-file=ci.tfvars
+        run: terraform validate
+
+      - name: terraform plan (ci vars, sem apply)
+        run: terraform plan -input=false -lock=false -refresh=false -var-file=ci.tfvars -out=/tmp/tfplan
