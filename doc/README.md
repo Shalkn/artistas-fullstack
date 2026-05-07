@@ -282,6 +282,36 @@ Opcional: criar **Environment** `production` no GitHub e exigir aprovadores ante
 
 **Na VM (detalhe):** não é obrigatório clonar na mão: o primeiro deploy pode criar o clone em `DEPLOY_PATH`. O deploy **reconstrói** imagens com `--build`; as imagens no GHCR ficam disponíveis para uso futuro (ex.: deploy só com `pull`).
 
+### Automação pós-reboot da VM (opcional)
+
+Para evitar subir manualmente Docker/Compose/Funnel após reinicializações, este repositório inclui:
+
+- Script: [`scripts/start-server.sh`](../scripts/start-server.sh)
+- Unit file `systemd`: [`deploy/artistas-startup.service`](../deploy/artistas-startup.service)
+
+Passos na VM (ajuste caminhos/usuário se necessário):
+
+```bash
+cd /home/renan/artistas-fullstack
+chmod +x scripts/start-server.sh
+sudo cp deploy/artistas-startup.service /etc/systemd/system/artistas-startup.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now artistas-startup.service
+sudo systemctl status artistas-startup.service --no-pager
+```
+
+Logs em tempo real:
+
+```bash
+journalctl -u artistas-startup.service -f
+```
+
+Se quiser apenas testar manualmente sem `systemd`:
+
+```bash
+DEPLOY_PATH=/home/renan/artistas-fullstack ./scripts/start-server.sh
+```
+
 ---
 
 ## Fase 7 — Segurança: não vazar chave, `.env` nem estado
