@@ -235,7 +235,7 @@ Automatizar o que você faria manualmente: atualizar imagens e reiniciar Compose
 
 ### Implementação neste repositório (Fase 6)
 
-- [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml): em **`workflow_dispatch`** ou **tag `v*`**: job **publish-ghcr** faz build e push das imagens `…-api` e `…-web` para **GHCR** (`ghcr.io/<owner>/<repo>-api` e `…-web`, tags `:sha` e `:latest`); job **deploy-vm** usa SSH e, se **`DEPLOY_PATH`** ainda não for um repo git, executa **`git clone`** de `https://github.com/<owner>/<repo>.git`; depois `git pull`, escreve `${{ secrets.DEPLOY_DOTENV }}` em `.env`, executa `docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d --build` e roda healthcheck do **Actuator** no container `api`.
+- [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml): em **`workflow_dispatch`** ou **tag `v*`**: job **publish-ghcr** faz build e push das imagens `…-api` e `…-web` para **GHCR** (`ghcr.io/<owner>/<repo>-api` e `…-web`, tags `:sha` e `:latest`); job **deploy-vm** usa SSH e, se **`DEPLOY_PATH`** ainda não for um repo git, executa **`git clone`** de `https://github.com/<owner>/<repo>.git`; depois `git pull`, escreve `${{ secrets.DEPLOY_DOTENV }}` em `.env`, executa `docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d --build`, roda healthcheck do **Actuator** no container `api` e reaplica o **Tailscale Funnel** para `http://127.0.0.1:80`.
 
 **Secrets necessários no repositório** (Settings → Secrets and variables → Actions):
 
@@ -268,7 +268,9 @@ Use esta lista para revisar configuração; marque os itens no seu fork quando e
 **Na VM**
 
 - [ ] `git` e Docker (+ plugin Compose) funcionando.
+- [ ] `tailscale` instalado e autenticado na VM de deploy.
 - [ ] Usuário SSH com permissão de escrita em `DEPLOY_PATH` para o workflow atualizar `.env` no deploy.
+- [ ] Usuário SSH com `sudo` sem senha para comandos `tailscale funnel` (automação sem prompt interativo).
 - [ ] (Opcional até o primeiro run) Pasta `DEPLOY_PATH` já existe ou você aceita que o primeiro deploy crie o clone lá via `git clone`.
 
 **Actions**

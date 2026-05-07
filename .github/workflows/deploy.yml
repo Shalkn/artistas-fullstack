@@ -100,3 +100,14 @@ jobs:
             docker compose $COMPOSE_OPTS --env-file .env up -d --build
             sleep 15
             docker compose $COMPOSE_OPTS --env-file .env exec -T api wget -qO- http://127.0.0.1:8080/actuator/health | grep -q UP
+            if ! command -v tailscale >/dev/null 2>&1; then
+              echo "tailscale não encontrado na VM"
+              exit 1
+            fi
+            if ! sudo -n true >/dev/null 2>&1; then
+              echo "sudo sem senha é necessário para configurar tailscale funnel no deploy"
+              exit 1
+            fi
+            sudo -n tailscale funnel reset || true
+            sudo -n tailscale funnel --https=443 http://127.0.0.1:80
+            tailscale funnel status
