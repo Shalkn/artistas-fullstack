@@ -29,6 +29,11 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
+      - name: Limpeza preventiva de cache Docker (runner self-hosted)
+        run: |
+          docker builder prune -af || true
+          docker image prune -af || true
+
       - name: Build e push API
         uses: docker/build-push-action@v6
         with:
