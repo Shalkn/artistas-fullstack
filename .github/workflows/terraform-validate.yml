@@ -30,6 +30,16 @@ jobs:
       - name: Arquivo dummy para validate (file() da connection SSH)
         run: printf '%s\n' 'ci-placeholder-not-a-real-key' > /tmp/terraform-ci-dummy-key && chmod 600 /tmp/terraform-ci-dummy-key
 
+      - name: Arquivo de variáveis do CI (temporário)
+        run: |
+          cat > /tmp/terraform-ci.tfvars <<'EOF'
+          ssh_host                 = "127.0.0.1"
+          ssh_user                 = "ci"
+          ssh_port                 = 22
+          ssh_private_key_path     = "/tmp/terraform-ci-dummy-key"
+          tailscale_funnel_enabled = false
+          EOF
+
       - name: terraform init (sem backend remoto)
         run: terraform init -backend=false -input=false
 
@@ -37,4 +47,4 @@ jobs:
         run: terraform validate
 
       - name: terraform plan (ci vars, sem apply)
-        run: terraform plan -input=false -lock=false -refresh=false -var-file=ci.tfvars -out=/tmp/tfplan
+        run: terraform plan -input=false -lock=false -refresh=false -var-file=/tmp/terraform-ci.tfvars -out=/tmp/tfplan

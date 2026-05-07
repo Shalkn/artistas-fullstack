@@ -204,7 +204,7 @@ Para **só validar** Terraform e rodar testes, normalmente **não** precisa de s
 ### Implementação neste repositório (Fase 5)
 
 - [`.github/workflows/ci.yml`](../.github/workflows/ci.yml): jobs paralelos — backend (`mvn verify`), frontend (`npm ci`, `lint`, `build`), Docker (`build` das imagens API/Web sem push, cache GHA).
-- [`.github/workflows/terraform-validate.yml`](../.github/workflows/terraform-validate.yml): `terraform fmt -check`, `init -backend=false`, `validate -var-file=ci.tfvars` (usa [`infra/terraform/ci.tfvars`](../infra/terraform/ci.tfvars) + chave dummy no runner).
+- [`.github/workflows/terraform-validate.yml`](../.github/workflows/terraform-validate.yml): `terraform fmt -check`, `init -backend=false`, `validate` e `plan` sem apply com arquivo `tfvars` temporário em `/tmp` + chave dummy no runner.
 
 **Branch protection (manual no GitHub):** em **Settings → Branches**, proteja `main` e exija os status checks `CI`, `Terraform validate` (e outros que aparecerem) antes do merge.
 
